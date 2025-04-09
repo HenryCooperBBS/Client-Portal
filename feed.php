@@ -79,20 +79,12 @@ $uploads = $stmt->fetchAll();
                             <a href="<?php echo htmlspecialchars($upload['github_link']); ?>" target="_blank"
                             class="inline-flex items-center justify-center bg-gray-800 hover:bg-gray-900 text-white p-2 rounded">
                                 <!-- GitHub SVG Logo -->
-                                <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                                <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M12 .5C5.6.5.5 5.6.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.5v-1.7c-3.2.7-3.9-1.5-3.9-1.5-.5-1.2-1.2-1.5-1.2-1.5-1-.7.1-.7.1-.7 1.1.1 1.7 1.2 1.7 1.2 1 .1 1.5 2.2 1.5 2.2.9 1.5 2.5 1 3.1.8.1-.7.4-1 .7-1.3-2.6-.3-5.3-1.3-5.3-6 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3 0 0 1-.3 3.3 1.2a11.5 11.5 0 016 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.5.2 2.7.1 3 .8.8 1.2 1.9 1.2 3.2 0 4.7-2.7 5.7-5.3 6 .4.3.7.9.7 1.7v2.5c0 .3.2.7.8.5A10.5 10.5 0 0023.5 12c0-6.4-5.1-11.5-11.5-11.5z"/>
                                 </svg>
                             </a>
                         <?php endif; ?>
                     </div>
-
-
-                    <?php if (!empty($upload['link'])): ?>
-                        <a href="<?php echo htmlspecialchars($upload['link']); ?>" target="_blank" 
-                        class="mt-2 inline-block bg-blue-500 hover:bg-blue-700 text-white text-xs font-bold py-2 px-4 rounded">
-                            View Project
-                        </a>
-                    <?php endif; ?>
 
                     <p class="text-gray-500 text-xs text-center">
                         Uploaded by <span class="font-semibold"><?php echo htmlspecialchars($upload['username']); ?></span><br>
