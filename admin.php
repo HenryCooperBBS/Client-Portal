@@ -91,6 +91,7 @@ $users = $stmt->fetchAll();
                         <th class="py-2 px-4">Username</th>
                         <th class="py-2 px-4">Current Group</th>
                         <th class="py-2 px-4">Assign Group</th>
+                        <th class="py-2 px-4">Manage User</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -116,6 +117,17 @@ $users = $stmt->fetchAll();
                                         Update
                                     </button>
                                 </form>
+                            </td>
+                            <td class="py-2 px-4 flex space-x-2">
+                                <a href="edit_user.php?id=<?php echo $user['id']; ?>"
+                                class="bg-yellow-400 hover:bg-yellow-500 text-white text-xs font-bold py-1 px-3 rounded">
+                                    Edit
+                                </a>
+                                <a href="delete_user.php?id=<?php echo $user['id']; ?>"
+                                onclick="return confirm('Are you sure you want to delete this user?');"
+                                class="bg-red-500 hover:bg-red-700 text-white text-xs font-bold py-1 px-3 rounded">
+                                    Delete
+                                </a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
