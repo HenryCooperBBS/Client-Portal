@@ -2,107 +2,128 @@
 session_start();
 require_once 'includes/db.php';
 
+// Admin check
 if (!isset($_SESSION['user_id'])) {
-    header("Location: index.php");
+    header('Location: login.php');
     exit;
 }
 
-// Fetch the current user
-$stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+$stmt = $pdo->prepare("SELECT is_admin FROM users WHERE id = ?");
 $stmt->execute([$_SESSION['user_id']]);
-$currentUser = $stmt->fetch();
+$user = $stmt->fetch();
 
-// Check if current user is admin
-if (!$currentUser || $currentUser['is_admin'] != 1) {
-    header("Location: dashboard.php");
+if (!$user || $user['is_admin'] != 1) {
+    header('Location: feed.php');
     exit;
 }
+
+// Handle New Group Creation
+if (isset($_POST['create_group'])) {
+    $groupName = trim($_POST['group_name']);
+    if (!empty($groupName)) {
+        $stmt = $pdo->prepare("INSERT INTO user_groups (name) VALUES (?)");
+        $stmt->execute([$groupName]);
+    }
+}
+
+// Handle Updating User Group
+if (isset($_POST['update_group'])) {
+    $userId = (int)$_POST['user_id'];
+    $groupId = (int)$_POST['group_id'];
+    $stmt = $pdo->prepare("UPDATE users SET group_id = ? WHERE id = ?");
+    $stmt->execute([$groupId, $userId]);
+}
+
+// Fetch All Groups
+$stmt = $pdo->query("SELECT * FROM user_groups");
+$groups = $stmt->fetchAll();
+
+// Fetch All Users
+$stmt = $pdo->query("SELECT users.*, user_groups.name AS group_name FROM users LEFT JOIN user_groups ON users.group_id = user_groups.id");
+$users = $stmt->fetchAll();
 ?>
 
 <?php include 'templates/header.php'; ?>
 
-<div class="flex">
+<div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <?php include 'templates/admin-sidebar.php'; ?>
 
-<?php include 'includes/admin-sidebar.php'; ?>
+    <!-- Main Content -->
+    <div class="flex-1 p-6 max-w-6xl mx-auto">
+        <h2 class="text-3xl font-bold mb-8 text-center">Admin Panel</h2>
 
-<div class="w-full max-w-3xl mx-auto mt-10">
-    <h2 class="text-3xl font-bold mb-6 text-center">Admin Portal - Manage Users</h2>
+        <!-- Create New Group -->
+        <div class="mb-12">
+            <h3 class="text-2xl font-semibold mb-4">Create New Group</h3>
 
-    <?php if (isset($_SESSION['flash_admin'])): ?>
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4 text-center">
-            <?php 
-            echo $_SESSION['flash_admin']; 
-            unset($_SESSION['flash_admin']); 
-            ?>
+            <form method="POST" class="flex items-center space-x-4">
+                <input type="text" name="group_name" required
+                       placeholder="New Group Name"
+                       class="flex-1 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                <button type="submit" name="create_group"
+                        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                    Create Group
+                </button>
+            </form>
         </div>
-    <?php endif; ?>
 
-    <?php
-    // Fetch all users
-    $stmt = $pdo->query("SELECT id, username, email, created_at, is_admin FROM users ORDER BY created_at DESC");
-    $users = $stmt->fetchAll();
-    ?>
+        <!-- List Existing Groups -->
+        <div class="mb-12">
+            <h3 class="text-2xl font-semibold mb-4">Existing Groups</h3>
 
-    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        <table class="min-w-full leading-normal">
-            <thead>
-                <tr>
-                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Username
-                    </th>
-                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Email
-                    </th>
-                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Member Since
-                    </th>
-                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Admin
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($users as $user): ?>
-                <tr class="hover:bg-gray-50">
-                    <td class="px-5 py-5 border-b border-gray-200 text-sm">
-                        <?php echo htmlspecialchars($user['username']); ?>
-                    </td>
-                    <td class="px-5 py-5 border-b border-gray-200 text-sm">
-                        <?php echo htmlspecialchars($user['email']); ?>
-                    </td>
-                    <td class="px-5 py-5 border-b border-gray-200 text-sm">
-                        <?php echo date('F j, Y', strtotime($user['created_at'])); ?>
-                    </td>
-                    <td class="px-5 py-5 border-b border-gray-200 text-sm text-center">
-                        <?php echo $user['is_admin'] ? '✅' : '❌'; ?>
-                    </td>
-                    <td class="px-5 py-5 border-b border-gray-200 text-sm text-right">
-                        <?php if ($user['id'] != $_SESSION['user_id']): ?>
-                            <a href="toggle_admin.php?id=<?php echo $user['id']; ?>"
-                            class="bg-yellow-400 hover:bg-yellow-600 text-white text-xs font-bold py-1 px-3 rounded mr-2">
-                            <?php echo $user['is_admin'] ? 'Demote' : 'Promote'; ?>
-                            </a>
-
-                            <a href="delete_user.php?id=<?php echo $user['id']; ?>"
-                            class="bg-red-500 hover:bg-red-700 text-white text-xs font-bold py-1 px-3 rounded"
-                            onclick="return confirm('Are you sure you want to delete this user?');">
-                            Delete
-                            </a>
-                        <?php else: ?>
-                            <span class="text-gray-400 text-xs">(You)</span>
-                        <?php endif; ?>
-                    </td>
-                </tr>
+            <ul class="grid grid-cols-2 gap-4">
+                <?php foreach ($groups as $group): ?>
+                    <li class="bg-white shadow rounded p-4 text-gray-700">
+                        <?php echo htmlspecialchars($group['name']); ?>
+                    </li>
                 <?php endforeach; ?>
-            </tbody>
+            </ul>
+        </div>
 
+        <!-- Manage Users -->
+        <div>
+            <h3 class="text-2xl font-semibold mb-4">Manage Users</h3>
 
-        </table>
-    </div>
-
-    <div class="text-center mt-6">
-        <a href="dashboard.php" class="text-blue-500 hover:text-blue-700">← Back to Dashboard</a>
+            <table class="min-w-full bg-white rounded shadow-md mb-12">
+                <thead>
+                    <tr class="bg-gray-100 text-gray-700 text-left">
+                        <th class="py-2 px-4">Username</th>
+                        <th class="py-2 px-4">Current Group</th>
+                        <th class="py-2 px-4">Assign Group</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($users as $user): ?>
+                        <tr class="border-t">
+                            <td class="py-2 px-4"><?php echo htmlspecialchars($user['username']); ?></td>
+                            <td class="py-2 px-4"><?php echo htmlspecialchars($user['group_name'] ?? 'None'); ?></td>
+                            <td class="py-2 px-4">
+                                <form method="POST" class="flex items-center space-x-2">
+                                    <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
+                                    <select name="group_id"
+                                            class="shadow border rounded py-1 px-2 text-gray-700">
+                                        <option value="">None</option>
+                                        <?php foreach ($groups as $group): ?>
+                                            <option value="<?php echo $group['id']; ?>"
+                                                <?php echo ($user['group_id'] == $group['id']) ? 'selected' : ''; ?>>
+                                                <?php echo htmlspecialchars($group['name']); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                    <button type="submit" name="update_group"
+                                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded">
+                                        Update
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
 <?php include 'templates/footer.php'; ?>
+
