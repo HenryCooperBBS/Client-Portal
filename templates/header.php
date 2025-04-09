@@ -9,13 +9,19 @@
 <body class="bg-gray-100 min-h-screen">
 
 <!-- Top Navbar -->
-<nav class="bg-white shadow mb-6">
+<!-- Top Navbar -->
+<nav class="bg-gradient-to-r from-blue-500 to-purple-600 shadow-md">
     <div class="max-w-7xl mx-auto px-4">
         <div class="flex justify-between items-center h-16">
+            <!-- Left: Logo -->
             <div class="flex items-center">
-                <a href="dashboard.php" class="text-xl font-bold text-gray-800">Henrys Portfolio</a>
+                <a href="dashboard.php" class="text-2xl font-extrabold text-white drop-shadow">
+                    Henry's Portfolio
+                </a>
             </div>
-            <div class="flex items-center space-x-4">
+
+            <!-- Right: Links -->
+            <div class="flex items-center space-x-6">
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <?php
                     require_once __DIR__ . '/../includes/db.php';
@@ -25,58 +31,62 @@
                     ?>
 
                     <?php if ($user && $user['is_admin'] == 1): ?>
-                        <a href="dashboard.php" class="text-gray-700 hover:text-gray-900">Upload</a>
+                        <a href="dashboard.php" class="text-white hover:text-gray-200 font-semibold transition">
+                            Upload
+                        </a>
                     <?php endif; ?>
                 <?php endif; ?>
-                <a href="feed.php" class="text-gray-700 hover:text-gray-900">Projects</a>
-                <a href="about.php" class="text-gray-700 hover:text-gray-900">About</a>
+
+                <a href="feed.php" class="text-white hover:text-gray-200 font-semibold transition">
+                    Projects
+                </a>
+
+                <a href="about.php" class="text-white hover:text-gray-200 font-semibold transition">
+                    About
+                </a>
 
                 <?php
                 if (isset($_SESSION['user_id'])) {
                     require_once __DIR__ . '/../includes/db.php';
-
                     $stmt = $pdo->prepare("SELECT is_admin FROM users WHERE id = ?");
                     $stmt->execute([$_SESSION['user_id']]);
                     $user = $stmt->fetch();
 
                     if ($user && $user['is_admin']) {
-                        echo '<a href="admin.php" class="text-gray-700 hover:text-gray-900">Admin</a>';
+                        echo '<a href="admin.php" class="text-white hover:text-gray-200 font-semibold transition">Admin</a>';
                     }
                 }
                 ?>
 
+                <!-- Notifications Bell + Dropdown -->
                 <?php
                 $notificationCount = 0;
                 $latestNotifications = [];
                 if (isset($_SESSION['user_id'])) {
                     require_once __DIR__ . '/../includes/db.php';
-
-                    // Count unread
                     $stmt = $pdo->prepare("SELECT COUNT(*) FROM notifications WHERE user_id = ? AND is_read = 0");
                     $stmt->execute([$_SESSION['user_id']]);
                     $notificationCount = $stmt->fetchColumn();
 
-                    // Fetch latest 5 notifications
                     $stmt = $pdo->prepare("SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 5");
                     $stmt->execute([$_SESSION['user_id']]);
                     $latestNotifications = $stmt->fetchAll();
                 }
                 ?>
 
-                <!-- Notifications Bell + Dropdown -->
                 <?php if (isset($_SESSION['user_id'])): ?>
-                    <div class="relative group mr-6">
-                        <button class="relative text-gray-700 hover:text-gray-900 focus:outline-none">
+                    <div class="relative group">
+                        <button class="relative text-white hover:text-gray-200 text-2xl focus:outline-none">
                             🔔
                             <?php if ($notificationCount > 0): ?>
-                                <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full px-1">
+                                <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full px-1">
                                     <?php echo $notificationCount; ?>
                                 </span>
                             <?php endif; ?>
                         </button>
 
                         <!-- Dropdown -->
-                        <div class="absolute right-0 mt-2 w-72 bg-white shadow-md rounded hidden group-hover:block z-50">
+                        <div class="absolute right-0 mt-2 w-72 bg-white shadow-lg rounded hidden group-hover:block z-50">
                             <div class="p-4">
                                 <h3 class="text-sm font-semibold text-gray-700 mb-2">Notifications</h3>
                                 <?php if ($latestNotifications): ?>
@@ -100,11 +110,11 @@
                 <?php endif; ?>
 
                 <?php if (isset($_SESSION['user_id'])): ?>
-                    <a href="logout.php" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                    <a href="logout.php" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full transition">
                         Logout
                     </a>
                 <?php else: ?>
-                    <a href="index.php" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                    <a href="index.php" class="bg-green-400 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full transition">
                         Login
                     </a>
                 <?php endif; ?>
@@ -112,6 +122,7 @@
         </div>
     </div>
 </nav>
+
 
 <script>
 function fetchNotifications() {
