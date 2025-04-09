@@ -104,9 +104,13 @@ if (!$currentUser || $currentUser['is_admin'] != 1) {
                                     </div>
                                 <?php endif; ?>
                             </div>
-                            <div>
+                            <div class="flex items-center space-x-2">
+                                <a href="edit_project.php?id=<?php echo $upload['id']; ?>" 
+                                class="bg-yellow-500 hover:bg-yellow-600 text-white text-xs font-bold py-1 px-2 rounded">
+                                    Edit
+                                </a>
                                 <a href="delete.php?id=<?php echo $upload['id']; ?>" 
-                                   class="ml-4 bg-red-500 hover:bg-red-700 text-white text-xs font-bold py-1 px-2 rounded">
+                                class="bg-red-500 hover:bg-red-700 text-white text-xs font-bold py-1 px-2 rounded">
                                     Delete
                                 </a>
                             </div>

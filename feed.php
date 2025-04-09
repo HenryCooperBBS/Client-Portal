@@ -2,10 +2,8 @@
 session_start();
 require_once 'includes/db.php';
 
-if (!isset($_SESSION['user_id'])) {
-    header("Location: index.php");
-    exit;
-}
+// No redirect needed
+
 ?>
 
 <?php include 'templates/header.php'; ?>
@@ -91,10 +89,16 @@ if (!isset($_SESSION['user_id'])) {
                     ?>
 
                     <div class="flex items-center space-x-2 mt-4">
+                    <?php if (isset($_SESSION['user_id'])): ?>
                         <button onclick="likeUpload(<?php echo $upload['id']; ?>)" 
                                 class="text-red-500 hover:text-red-700 text-xl">
                             ❤️
                         </button>
+                    <?php else: ?>
+                        <div class="text-gray-400 text-xl cursor-not-allowed" title="Login to like projects">
+                            ❤️
+                        </div>
+                    <?php endif; ?>
                         <span id="like-count-<?php echo $upload['id']; ?>" class="text-gray-700 text-sm">
                             <?php echo $likeCount; ?> Like<?php echo ($likeCount == 1) ? '' : 's'; ?>
                         </span>

@@ -1,3 +1,8 @@
+<?php
+session_start();
+require_once 'includes/db.php';
+?>
+
 <?php include 'templates/header.php'; ?>
 
 <div class="max-w-3xl mx-auto p-6">
@@ -14,7 +19,7 @@
     </p>
 
     <div class="flex justify-center">
-        <a href="uploads/Henry Cooper - CV.pdf" target="_blank"
+        <a href="uploads/your-cv.pdf" target="_blank"
            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
             View My CV
         </a>

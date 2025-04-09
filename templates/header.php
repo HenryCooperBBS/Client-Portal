@@ -64,51 +64,48 @@
                 ?>
 
                 <!-- Notifications Bell + Dropdown -->
-                <div class="relative group">
-                    <button class="relative text-gray-700 hover:text-gray-900 focus:outline-none mr-6">
-                        🔔
-                        <?php if ($notificationCount > 0): ?>
-                            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full px-1">
-                                <?php echo $notificationCount; ?>
-                            </span>
-                        <?php endif; ?>
-                    </button>
-
-                    <!-- Dropdown -->
-                    <div class="absolute right-0 mt-2 w-72 bg-white shadow-md rounded hidden group-hover:block z-50">
-                        <div class="p-4">
-                            <h3 class="text-sm font-semibold text-gray-700 mb-2">Notifications</h3>
-
-                            <?php if ($latestNotifications): ?>
-                                <ul class="space-y-2 mb-4">
-                                    <?php foreach ($latestNotifications as $notification): ?>
-                                        <li class="text-gray-600 text-sm <?php echo !$notification['is_read'] ? 'font-bold' : ''; ?>">
-                                            <?php echo htmlspecialchars($notification['message']); ?>
-                                            <br>
-                                            <span class="text-gray-400 text-xs">
-                                                <?php echo date('M j, g:i a', strtotime($notification['created_at'])); ?>
-                                            </span>
-                                        </li>
-                                    <?php endforeach; ?>
-                                </ul>
-
-                                <!-- Clear All Notifications Button -->
-                                <form action="clear_notifications.php" method="POST">
-                                    <button type="submit" class="w-full bg-red-500 hover:bg-red-700 text-white text-xs font-bold py-2 px-4 rounded">
-                                        Clear All
-                                    </button>
-                                </form>
-
-                            <?php else: ?>
-                                <p class="text-gray-400 text-xs">No notifications.</p>
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <div class="relative group mr-6">
+                        <button class="relative text-gray-700 hover:text-gray-900 focus:outline-none">
+                            🔔
+                            <?php if ($notificationCount > 0): ?>
+                                <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full px-1">
+                                    <?php echo $notificationCount; ?>
+                                </span>
                             <?php endif; ?>
+                        </button>
+
+                        <!-- Dropdown -->
+                        <div class="absolute right-0 mt-2 w-72 bg-white shadow-md rounded hidden group-hover:block z-50">
+                            <div class="p-4">
+                                <h3 class="text-sm font-semibold text-gray-700 mb-2">Notifications</h3>
+                                <?php if ($latestNotifications): ?>
+                                    <ul class="space-y-2">
+                                        <?php foreach ($latestNotifications as $notification): ?>
+                                            <li class="text-gray-600 text-sm <?php echo !$notification['is_read'] ? 'font-bold' : ''; ?>">
+                                                <?php echo htmlspecialchars($notification['message']); ?>
+                                                <br>
+                                                <span class="text-gray-400 text-xs">
+                                                    <?php echo date('M j, g:i a', strtotime($notification['created_at'])); ?>
+                                                </span>
+                                            </li>
+                                        <?php endforeach; ?>
+                                    </ul>
+                                <?php else: ?>
+                                    <p class="text-gray-400 text-xs">No notifications.</p>
+                                <?php endif; ?>
+                            </div>
                         </div>
                     </div>
-
+                <?php endif; ?>
 
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <a href="logout.php" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
                         Logout
+                    </a>
+                <?php else: ?>
+                    <a href="index.php" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                        Login
                     </a>
                 <?php endif; ?>
             </div>
