@@ -14,11 +14,11 @@ if (!isset($_SESSION['user_id'])) {
     <h2 class="text-3xl font-bold mb-8 text-center">Recent Uploads</h2>
 
     <?php
-    $stmt = $pdo->query("SELECT uploads.filename, uploads.uploaded_at, users.username 
-                         FROM uploads 
-                         JOIN users ON uploads.user_id = users.id 
-                         ORDER BY uploads.uploaded_at DESC 
-                         LIMIT 30"); // Show the 30 most recent uploads
+        $stmt = $pdo->query("SELECT uploads.id, uploads.filename, uploads.name, uploads.comment, uploads.uploaded_at, users.username 
+        FROM uploads 
+        JOIN users ON uploads.user_id = users.id 
+        ORDER BY uploads.uploaded_at DESC 
+        LIMIT 30");
 
     $uploads = $stmt->fetchAll();
     ?>
@@ -54,6 +54,24 @@ if (!isset($_SESSION['user_id'])) {
                         Uploaded by <span class="font-semibold"><?php echo htmlspecialchars($upload['username']); ?></span><br>
                         <?php echo date('F j, Y', strtotime($upload['uploaded_at'])); ?>
                     </p>
+
+                    <?php
+                    // Count total likes for this upload
+                    $likeStmt = $pdo->prepare("SELECT COUNT(*) FROM likes WHERE upload_id = ?");
+                    $likeStmt->execute([$upload['id']]);
+                    $likeCount = $likeStmt->fetchColumn();
+                    ?>
+
+                    <div class="flex items-center space-x-2 mt-4">
+                        <button onclick="likeUpload(<?php echo $upload['id']; ?>)" 
+                                class="text-red-500 hover:text-red-700 text-xl">
+                            ❤️
+                        </button>
+                        <span id="like-count-<?php echo $upload['id']; ?>" class="text-gray-700 text-sm">
+                            <?php echo $likeCount; ?> Like<?php echo ($likeCount == 1) ? '' : 's'; ?>
+                        </span>
+                    </div>
+
                 </div>
             <?php endforeach; ?>
         </div>
@@ -61,5 +79,24 @@ if (!isset($_SESSION['user_id'])) {
         <p class="text-center text-gray-600">No uploads yet. Be the first!</p>
     <?php endif; ?>
 </div>
+
+<script>
+function likeUpload(uploadId) {
+    fetch('like.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: 'upload_id=' + uploadId
+    })
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('like-count-' + uploadId).innerText = data + ' Like' + (data == 1 ? '' : 's');
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+</script>
 
 <?php include 'templates/footer.php'; ?>
