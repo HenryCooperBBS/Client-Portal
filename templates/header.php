@@ -66,8 +66,9 @@
                     <div class="absolute right-0 mt-2 w-72 bg-white shadow-md rounded hidden group-hover:block z-50">
                         <div class="p-4">
                             <h3 class="text-sm font-semibold text-gray-700 mb-2">Notifications</h3>
+
                             <?php if ($latestNotifications): ?>
-                                <ul class="space-y-2">
+                                <ul class="space-y-2 mb-4">
                                     <?php foreach ($latestNotifications as $notification): ?>
                                         <li class="text-gray-600 text-sm <?php echo !$notification['is_read'] ? 'font-bold' : ''; ?>">
                                             <?php echo htmlspecialchars($notification['message']); ?>
@@ -78,12 +79,20 @@
                                         </li>
                                     <?php endforeach; ?>
                                 </ul>
+
+                                <!-- Clear All Notifications Button -->
+                                <form action="clear_notifications.php" method="POST">
+                                    <button type="submit" class="w-full bg-red-500 hover:bg-red-700 text-white text-xs font-bold py-2 px-4 rounded">
+                                        Clear All
+                                    </button>
+                                </form>
+
                             <?php else: ?>
                                 <p class="text-gray-400 text-xs">No notifications.</p>
                             <?php endif; ?>
                         </div>
                     </div>
-                </div>
+
 
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <a href="logout.php" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
