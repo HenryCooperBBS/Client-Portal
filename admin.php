@@ -21,6 +21,8 @@ if (!$currentUser || $currentUser['is_admin'] != 1) {
 
 <?php include 'templates/header.php'; ?>
 
+<?php include 'includes/admin-sidebar.php'; ?>
+
 <div class="w-full max-w-3xl mx-auto mt-10">
     <h2 class="text-3xl font-bold mb-6 text-center">Admin Portal - Manage Users</h2>
 
@@ -73,15 +75,25 @@ if (!$currentUser || $currentUser['is_admin'] != 1) {
                         <?php echo $user['is_admin'] ? '✅' : '❌'; ?>
                     </td>
                     <td class="px-5 py-5 border-b border-gray-200 text-sm text-right">
-                        <a href="delete_user.php?id=<?php echo $user['id']; ?>"
-                        class="bg-red-500 hover:bg-red-700 text-white text-xs font-bold py-1 px-3 rounded"
-                        onclick="return confirm('Are you sure you want to delete this user?');">
-                        Delete
-                        </a>
+                        <?php if ($user['id'] != $_SESSION['user_id']): ?>
+                            <a href="toggle_admin.php?id=<?php echo $user['id']; ?>"
+                            class="bg-yellow-400 hover:bg-yellow-600 text-white text-xs font-bold py-1 px-3 rounded mr-2">
+                            <?php echo $user['is_admin'] ? 'Demote' : 'Promote'; ?>
+                            </a>
+
+                            <a href="delete_user.php?id=<?php echo $user['id']; ?>"
+                            class="bg-red-500 hover:bg-red-700 text-white text-xs font-bold py-1 px-3 rounded"
+                            onclick="return confirm('Are you sure you want to delete this user?');">
+                            Delete
+                            </a>
+                        <?php else: ?>
+                            <span class="text-gray-400 text-xs">(You)</span>
+                        <?php endif; ?>
                     </td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
+
 
         </table>
     </div>
