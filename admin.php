@@ -21,6 +21,8 @@ if (!$currentUser || $currentUser['is_admin'] != 1) {
 
 <?php include 'templates/header.php'; ?>
 
+<div class="flex">
+
 <?php include 'includes/admin-sidebar.php'; ?>
 
 <div class="w-full max-w-3xl mx-auto mt-10">
