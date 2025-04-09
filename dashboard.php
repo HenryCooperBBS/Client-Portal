@@ -26,4 +26,50 @@ $user = $stmt->fetch();
     </div>
 </div>
 
+<div class="mt-8">
+    <h3 class="text-xl font-bold mb-4">Upload a File</h3>
+
+    <?php if (isset($_SESSION['flash_upload'])): ?>
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+            <?php 
+            echo $_SESSION['flash_upload']; 
+            unset($_SESSION['flash_upload']); 
+            ?>
+        </div>
+    <?php endif; ?>
+
+    <form action="upload.php" method="POST" enctype="multipart/form-data" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <input type="file" name="file" required class="block w-full text-sm text-gray-700 border border-gray-300 rounded mb-4">
+        <button type="submit" name="upload" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Upload
+        </button>
+    </form>
+</div>
+
+<div class="mt-8">
+    <h3 class="text-xl font-bold mb-4">Your Files</h3>
+
+    <?php
+    $stmt = $pdo->prepare("SELECT * FROM uploads WHERE user_id = ?");
+    $stmt->execute([$_SESSION['user_id']]);
+    $uploads = $stmt->fetchAll();
+    ?>
+
+    <?php if ($uploads): ?>
+        <ul class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            <?php foreach ($uploads as $upload): ?>
+                <li class="mb-2">
+                    <a class="text-blue-500 hover:text-blue-700" href="uploads/<?php echo htmlspecialchars($upload['filename']); ?>" target="_blank">
+                        <?php echo htmlspecialchars($upload['filename']); ?>
+                    </a> 
+                    <span class="text-gray-400 text-sm">(Uploaded on <?php echo date('F j, Y', strtotime($upload['uploaded_at'])); ?>)</span>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    <?php else: ?>
+        <p class="text-gray-600">You haven't uploaded any files yet.</p>
+    <?php endif; ?>
+</div>
+
+
 <?php include 'templates/footer.php'; ?>

@@ -26,6 +26,15 @@ if (isset($_POST['login'])) {
     <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
         <h2 class="text-2xl font-bold mb-6 text-center">Login</h2>
 
+        <?php if (isset($_SESSION['flash_success'])): ?>
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                <?php 
+                echo $_SESSION['flash_success']; 
+                unset($_SESSION['flash_success']); 
+                ?>
+            </div>
+        <?php endif; ?>
+
         <?php if (isset($_SESSION['flash_error'])): ?>
             <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
                 <?php 
@@ -55,6 +64,9 @@ if (isset($_POST['login'])) {
                 </button>
             </div>
         </form>
+        <p class="text-center text-gray-600 text-sm mt-4">
+            Don't have an account? <a class="text-blue-500 hover:text-blue-700" href="register.php">Register</a>
+        </p>
     </div>
 </div>
 
