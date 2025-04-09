@@ -20,6 +20,9 @@ $stmt = $pdo->prepare("SELECT * FROM uploads WHERE id = ?");
 $stmt->execute([$uploadId]);
 $upload = $stmt->fetch();
 
+$groupStmt = $pdo->query("SELECT * FROM user_groups");
+$groups = $groupStmt->fetchAll();
+
 // Security check: Only the owner (you) or admin can edit
 if (!$upload || $upload['user_id'] != $_SESSION['user_id']) {
     header("Location: dashboard.php");
@@ -32,6 +35,7 @@ if (isset($_POST['update'])) {
     $comment = trim($_POST['comment']);
     $link = trim($_POST['link']);
     $github_link = trim($_POST['github_link']);
+    $visibility = trim($_POST['visibility']);
     
     // Check if new image was uploaded
     if (isset($_FILES['new_image']) && $_FILES['new_image']['error'] === 0) {
@@ -57,8 +61,11 @@ if (isset($_POST['update'])) {
         }
     } else {
         // No new image uploaded, just update text fields
-        $stmt = $pdo->prepare("UPDATE uploads SET name = ?, comment = ?, link = ?, github_link = ? WHERE id = ?");
-        $stmt->execute([$name, $comment, $link, $github_link, $uploadId]);
+        $stmt = $pdo->prepare("UPDATE uploads 
+        SET name = ?, comment = ?, link = ?, github_link = ?, visibility = ?
+        WHERE id = ?");
+        $stmt->execute([$name, $comment, $link, $github_link, $visibility, $uploadId]);
+
     }
 
     header("Location: dashboard.php");
@@ -103,6 +110,24 @@ if (isset($_POST['update'])) {
             <label class="block text-gray-700 text-sm font-bold mb-2">Change Image (optional)</label>
             <input type="file" name="new_image"
                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="visibility">Visibility</label>
+            <select name="visibility" id="visibility"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                
+                <option value="public" <?php echo ($upload['visibility'] === 'public') ? 'selected' : ''; ?>>
+                    Public (Everyone)
+                </option>
+
+                <?php foreach ($groups as $group): ?>
+                    <option value="<?php echo htmlspecialchars($group['name']); ?>"
+                        <?php echo ($upload['visibility'] === $group['name']) ? 'selected' : ''; ?>>
+                        <?php echo htmlspecialchars(ucfirst($group['name'])); ?>
+                    </option>
+                <?php endforeach; ?>
+                
+            </select>
         </div>
 
         <div class="flex justify-between">
