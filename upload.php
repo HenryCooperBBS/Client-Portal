@@ -14,6 +14,7 @@ if (isset($_POST['upload']) && isset($_FILES['file'])) {
     $comment = trim($_POST['comment']);
     $link = trim($_POST['link']);
     $githubLink = trim($_POST['github_link']);
+    $visibility = trim($_POST['visibility']);
 
     // Validation
     $allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
@@ -29,8 +30,8 @@ if (isset($_POST['upload']) && isset($_FILES['file'])) {
             $destination = 'uploads/' . $filename;
 
             if (move_uploaded_file($file['tmp_name'], $destination)) {
-                $stmt = $pdo->prepare("INSERT INTO uploads (user_id, filename, name, comment, link, github_link) VALUES (?, ?, ?, ?, ?, ?)");
-                $stmt->execute([$userId, $filename, $name, $comment, $link, $githubLink]);                             
+                $stmt = $pdo->prepare("INSERT INTO uploads (user_id, filename, name, comment, link, github_link, visibility) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                $stmt->execute([$userId, $filename, $name, $comment, $link, $github_link, $visibility]);                              
                 $_SESSION['flash_upload'] = "File uploaded successfully!";
             } else {
                 $_SESSION['flash_upload'] = "Error uploading file.";

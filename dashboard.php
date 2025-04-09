@@ -61,6 +61,15 @@ if (!$currentUser || $currentUser['is_admin'] != 1) {
                     placeholder="https://github.com/your-repo">
             </div>
             <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="visibility">Visibility</label>
+                <select name="visibility" id="visibility"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <option value="public">Public</option>
+                    <option value="client">Client Only</option>
+                    <option value="internal">Internal Only</option>
+                </select>
+            </div>
+            <div class="mb-4">
                 <input type="file" name="file" required
                     class="block w-full text-sm text-gray-700 border border-gray-300 rounded">
             </div>

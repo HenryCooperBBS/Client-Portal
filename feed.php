@@ -2,24 +2,27 @@
 session_start();
 require_once 'includes/db.php';
 
-// No redirect needed
+// Figure out user's group
+$userGroup = 'public'; // Default
+if (isset($_SESSION['user_id'])) {
+    $stmt = $pdo->prepare("SELECT user_group FROM users WHERE id = ?");
+    $stmt->execute([$_SESSION['user_id']]);
+    $user = $stmt->fetch();
+    if ($user) {
+        $userGroup = $user['user_group'];
+    }
+}
 
-?>
+// Fetch only projects user can see
+$stmt = $pdo->prepare("SELECT uploads.id, uploads.filename, uploads.name, uploads.comment, uploads.link, uploads.github_link, uploads.visibility, uploads.uploaded_at, users.username 
+                       FROM uploads 
+                       JOIN users ON uploads.user_id = users.id 
+                       WHERE uploads.visibility = 'public' OR uploads.visibility = ?
+                       ORDER BY uploads.uploaded_at DESC 
+                       LIMIT 30");
+$stmt->execute([$userGroup]);
+$uploads = $stmt->fetchAll();
 
-<?php include 'templates/header.php'; ?>
-
-<div class="max-w-5xl mx-auto p-6">
-    <h2 class="text-3xl font-bold mb-8 text-center">Recent Projects</h2>
-
-    <?php
-        $stmt = $pdo->query("SELECT uploads.id, uploads.filename, uploads.name, uploads.comment, uploads.link, uploads.github_link, uploads.uploaded_at, users.username 
-        FROM uploads 
-        JOIN users ON uploads.user_id = users.id 
-        ORDER BY uploads.uploaded_at DESC 
-        LIMIT 30");
-
-
-    $uploads = $stmt->fetchAll();
     ?>
 
     <?php if ($uploads): ?>
