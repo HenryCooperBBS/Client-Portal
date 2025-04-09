@@ -28,11 +28,31 @@ $user = $stmt->fetch();
         <?php endif; ?>
 
         <form action="upload.php" method="POST" enctype="multipart/form-data">
-            <input type="file" name="file" required class="block w-full text-sm text-gray-700 border border-gray-300 rounded mb-4">
-            <button type="submit" name="upload" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full">
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="name">Upload Name</label>
+                <input type="text" name="name" id="name"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    placeholder="Give your upload a name" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="comment">Comment (optional)</label>
+                <textarea name="comment" id="comment"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        placeholder="Add a comment..." rows="3"></textarea>
+            </div>
+
+            <div class="mb-4">
+                <input type="file" name="file" required
+                    class="block w-full text-sm text-gray-700 border border-gray-300 rounded">
+            </div>
+
+            <button type="submit" name="upload"
+                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full">
                 Upload
             </button>
         </form>
+
     </div>
 
     <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-6">

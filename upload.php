@@ -10,6 +10,8 @@ if (!isset($_SESSION['user_id'])) {
 if (isset($_POST['upload']) && isset($_FILES['file'])) {
     $userId = $_SESSION['user_id'];
     $file = $_FILES['file'];
+    $name = trim($_POST['name']);
+    $comment = trim($_POST['comment']);
 
     // Validation
     $allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
@@ -25,8 +27,8 @@ if (isset($_POST['upload']) && isset($_FILES['file'])) {
             $destination = 'uploads/' . $filename;
 
             if (move_uploaded_file($file['tmp_name'], $destination)) {
-                $stmt = $pdo->prepare("INSERT INTO uploads (user_id, filename) VALUES (?, ?)");
-                $stmt->execute([$userId, $filename]);
+                $stmt = $pdo->prepare("INSERT INTO uploads (user_id, filename, name, comment) VALUES (?, ?, ?, ?)");
+                $stmt->execute([$userId, $filename, $name, $comment]);
                 $_SESSION['flash_upload'] = "File uploaded successfully!";
             } else {
                 $_SESSION['flash_upload'] = "Error uploading file.";
@@ -39,4 +41,5 @@ if (isset($_POST['upload']) && isset($_FILES['file'])) {
 
 header("Location: dashboard.php");
 exit;
+
 ?>

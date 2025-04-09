@@ -40,9 +40,19 @@ if (!isset($_SESSION['user_id'])) {
                         <div class="text-gray-400 italic">[File not previewable]</div>
                     <?php endif; ?>
                     
-                    <p class="text-gray-700 text-sm">
+                    <p class="text-center text-lg font-semibold mb-2">
+                        <?php echo htmlspecialchars($upload['name']); ?>
+                    </p>
+
+                    <?php if (!empty($upload['comment'])): ?>
+                        <p class="text-gray-600 text-center mb-4">
+                            "<?php echo htmlspecialchars($upload['comment']); ?>"
+                        </p>
+                    <?php endif; ?>
+
+                    <p class="text-gray-500 text-xs text-center">
                         Uploaded by <span class="font-semibold"><?php echo htmlspecialchars($upload['username']); ?></span><br>
-                        <span class="text-gray-400 text-xs"><?php echo date('F j, Y', strtotime($upload['uploaded_at'])); ?></span>
+                        <?php echo date('F j, Y', strtotime($upload['uploaded_at'])); ?>
                     </p>
                 </div>
             <?php endforeach; ?>
