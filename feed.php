@@ -11,7 +11,7 @@ if (!isset($_SESSION['user_id'])) {
 <?php include 'templates/header.php'; ?>
 
 <div class="max-w-5xl mx-auto p-6">
-    <h2 class="text-3xl font-bold mb-8 text-center">Recent Uploads</h2>
+    <h2 class="text-3xl font-bold mb-8 text-center">Recent Projects</h2>
 
     <?php
         $stmt = $pdo->query("SELECT uploads.id, uploads.filename, uploads.name, uploads.comment, uploads.link, uploads.github_link, uploads.uploaded_at, users.username 

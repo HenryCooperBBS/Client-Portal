@@ -16,7 +16,18 @@
                 <a href="dashboard.php" class="text-xl font-bold text-gray-800">Henrys Portfolio</a>
             </div>
             <div class="flex items-center space-x-4">
-                <a href="dashboard.php" class="text-gray-700 hover:text-gray-900">Upload</a>
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <?php
+                    require_once __DIR__ . '/../includes/db.php';
+                    $stmt = $pdo->prepare("SELECT is_admin FROM users WHERE id = ?");
+                    $stmt->execute([$_SESSION['user_id']]);
+                    $user = $stmt->fetch();
+                    ?>
+
+                    <?php if ($user && $user['is_admin'] == 1): ?>
+                        <a href="dashboard.php" class="text-gray-700 hover:text-gray-900">Upload</a>
+                    <?php endif; ?>
+                <?php endif; ?>
                 <a href="feed.php" class="text-gray-700 hover:text-gray-900">Projects</a>
                 <a href="about.php" class="text-gray-700 hover:text-gray-900">About</a>
 

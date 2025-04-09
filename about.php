@@ -14,7 +14,7 @@
     </p>
 
     <div class="flex justify-center">
-        <a href="uploads/your-cv.pdf" target="_blank"
+        <a href="uploads/Henry Cooper - CV.pdf" target="_blank"
            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
             View My CV
         </a>

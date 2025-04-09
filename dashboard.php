@@ -7,9 +7,16 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+// Fetch the current user
 $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
 $stmt->execute([$_SESSION['user_id']]);
-$user = $stmt->fetch();
+$currentUser = $stmt->fetch();
+
+// Only allow admins
+if (!$currentUser || $currentUser['is_admin'] != 1) {
+    header("Location: feed.php"); // Redirect normal users to Projects
+    exit;
+}
 ?>
 
 <?php include 'templates/header.php'; ?>
