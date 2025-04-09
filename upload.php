@@ -31,7 +31,7 @@ if (isset($_POST['upload']) && isset($_FILES['file'])) {
 
             if (move_uploaded_file($file['tmp_name'], $destination)) {
                 $stmt = $pdo->prepare("INSERT INTO uploads (user_id, filename, name, comment, link, github_link, visibility) VALUES (?, ?, ?, ?, ?, ?, ?)");
-                $stmt->execute([$userId, $filename, $name, $comment, $link, $github_link, $visibility]);                              
+                $stmt->execute([$userId, $filename, $name, $comment, $link, $githublink, $visibility]);                              
                 $_SESSION['flash_upload'] = "File uploaded successfully!";
             } else {
                 $_SESSION['flash_upload'] = "Error uploading file.";
