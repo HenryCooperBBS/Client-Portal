@@ -8,7 +8,7 @@
             </a>
         </li>
         <li>
-            <a href="feed.php" class="block px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 font-medium">
+            <a href="view_uploads.php" class="block px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 font-medium">
                 View Projects
             </a>
         </li>

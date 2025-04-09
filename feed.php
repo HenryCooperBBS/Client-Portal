@@ -3,24 +3,37 @@ session_start();
 require_once 'includes/db.php';
 
 // Figure out user's group
-$userGroup = 'public'; // Default
+$userGroup = null; // Default no group
 if (isset($_SESSION['user_id'])) {
-    $stmt = $pdo->prepare("SELECT user_group FROM users WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT user_groups.name FROM users LEFT JOIN user_groups ON users.group_id = user_groups.id WHERE users.id = ?");
     $stmt->execute([$_SESSION['user_id']]);
     $user = $stmt->fetch();
     if ($user) {
-        $userGroup = $user['user_group'];
+        $userGroup = $user['name']; // group name like 'client'
     }
 }
 
 // Fetch only projects user can see
-$stmt = $pdo->prepare("SELECT uploads.id, uploads.filename, uploads.name, uploads.comment, uploads.link, uploads.github_link, uploads.visibility, uploads.uploaded_at, users.username 
-                       FROM uploads 
-                       JOIN users ON uploads.user_id = users.id 
-                       WHERE uploads.visibility = 'public' OR uploads.visibility = ?
-                       ORDER BY uploads.uploaded_at DESC 
-                       LIMIT 30");
-$stmt->execute([$userGroup]);
+if ($userGroup) {
+    // Logged in user, show public + group projects
+    $stmt = $pdo->prepare("SELECT uploads.id, uploads.filename, uploads.name, uploads.comment, uploads.link, uploads.github_link, uploads.visibility, uploads.uploaded_at, users.username 
+                           FROM uploads 
+                           JOIN users ON uploads.user_id = users.id 
+                           WHERE uploads.visibility = 'public' OR uploads.visibility = ?
+                           ORDER BY uploads.uploaded_at DESC 
+                           LIMIT 30");
+    $stmt->execute([$userGroup]);
+} else {
+    // Guest (not logged in), only show public projects
+    $stmt = $pdo->prepare("SELECT uploads.id, uploads.filename, uploads.name, uploads.comment, uploads.link, uploads.github_link, uploads.visibility, uploads.uploaded_at, users.username 
+                           FROM uploads 
+                           JOIN users ON uploads.user_id = users.id 
+                           WHERE uploads.visibility = 'public'
+                           ORDER BY uploads.uploaded_at DESC 
+                           LIMIT 30");
+    $stmt->execute();
+}
+
 $uploads = $stmt->fetchAll();
 
     ?>
