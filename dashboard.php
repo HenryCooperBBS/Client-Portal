@@ -58,22 +58,35 @@ $user = $stmt->fetch();
     <?php if ($uploads): ?>
         <ul class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
             <?php foreach ($uploads as $upload): ?>
-                <li class="mb-2 flex items-center justify-between">
-                    <div>
-                        <a class="text-blue-500 hover:text-blue-700" href="uploads/<?php echo htmlspecialchars($upload['filename']); ?>" target="_blank">
-                            <?php echo htmlspecialchars($upload['filename']); ?>
-                        </a> 
-                        <span class="text-gray-400 text-sm">(Uploaded on <?php echo date('F j, Y', strtotime($upload['uploaded_at'])); ?>)</span>
-                    </div>
-                    <div>
-                        <a href="delete.php?id=<?php echo $upload['id']; ?>" 
-                        class="ml-4 bg-red-500 hover:bg-red-700 text-white text-xs font-bold py-1 px-2 rounded">
-                            Delete
-                        </a>
+                <li class="mb-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <a class="text-blue-500 hover:text-blue-700" href="uploads/<?php echo htmlspecialchars($upload['filename']); ?>" target="_blank">
+                                <?php echo htmlspecialchars($upload['filename']); ?>
+                            </a> 
+                            <span class="text-gray-400 text-sm">(Uploaded on <?php echo date('F j, Y', strtotime($upload['uploaded_at'])); ?>)</span>
+
+                            <?php
+                            // Preview if it's an image
+                            $ext = strtolower(pathinfo($upload['filename'], PATHINFO_EXTENSION));
+                            if (in_array($ext, ['jpg', 'jpeg', 'png'])):
+                            ?>
+                                <div class="mt-2">
+                                    <img src="uploads/<?php echo htmlspecialchars($upload['filename']); ?>" alt="Preview" class="h-24 rounded shadow">
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                        <div>
+                            <a href="delete.php?id=<?php echo $upload['id']; ?>" 
+                            class="ml-4 bg-red-500 hover:bg-red-700 text-white text-xs font-bold py-1 px-2 rounded">
+                                Delete
+                            </a>
+                        </div>
                     </div>
                 </li>
             <?php endforeach; ?>
         </ul>
+
     <?php else: ?>
         <p class="text-gray-600">You haven't uploaded any files yet.</p>
     <?php endif; ?>
