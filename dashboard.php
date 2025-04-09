@@ -6,7 +6,8 @@ if (!isset($_SESSION['user_id'])) {
     header("Location: index.php");
     exit;
 }
-
+$groupStmt = $pdo->query("SELECT * FROM user_groups");
+$groups = $groupStmt->fetchAll();
 // Fetch the current user
 $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
 $stmt->execute([$_SESSION['user_id']]);
@@ -63,11 +64,16 @@ if (!$currentUser || $currentUser['is_admin'] != 1) {
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="visibility">Visibility</label>
                 <select name="visibility" id="visibility"
-                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                    <option value="public">Public</option>
-                    <option value="client">Client Only</option>
-                    <option value="internal">Internal Only</option>
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                    <option value="public">Public (Everyone)</option>
+                    <?php foreach ($groups as $group): ?>
+                        <option value="<?php echo htmlspecialchars($group['name']); ?>">
+                            <?php echo htmlspecialchars(ucfirst($group['name'])); ?>
+                        </option>
+                    <?php endforeach; ?>
                 </select>
+
+
             </div>
             <div class="mb-4">
                 <input type="file" name="file" required

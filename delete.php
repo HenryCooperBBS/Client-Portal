@@ -2,37 +2,54 @@
 session_start();
 require_once 'includes/db.php';
 
+// Must be logged in
 if (!isset($_SESSION['user_id'])) {
-    header("Location: index.php");
+    header('Location: login.php');
     exit;
 }
 
-if (isset($_GET['id'])) {
-    $uploadId = (int)$_GET['id'];
-
-    // Get the file info from the database
-    $stmt = $pdo->prepare("SELECT * FROM uploads WHERE id = ? AND user_id = ?");
-    $stmt->execute([$uploadId, $_SESSION['user_id']]);
-    $file = $stmt->fetch();
-
-    if ($file) {
-        $filePath = 'uploads/' . $file['filename'];
-
-        // Delete the file from the server
-        if (file_exists($filePath)) {
-            unlink($filePath);
-        }
-
-        // Delete the record from the database
-        $stmt = $pdo->prepare("DELETE FROM uploads WHERE id = ?");
-        $stmt->execute([$uploadId]);
-
-        $_SESSION['flash_upload'] = "File deleted successfully!";
-    } else {
-        $_SESSION['flash_upload'] = "File not found or you don't have permission.";
-    }
+// Must have an upload ID
+if (!isset($_GET['id'])) {
+    header('Location: feed.php');
+    exit;
 }
 
-header("Location: dashboard.php");
+$uploadId = (int)$_GET['id'];
+$userId = $_SESSION['user_id'];
+
+// Check if the upload exists
+$stmt = $pdo->prepare("SELECT * FROM uploads WHERE id = ?");
+$stmt->execute([$uploadId]);
+$upload = $stmt->fetch();
+
+if (!$upload) {
+    // Upload doesn't exist
+    header('Location: feed.php');
+    exit;
+}
+
+// Check if user is admin
+$stmt = $pdo->prepare("SELECT is_admin FROM users WHERE id = ?");
+$stmt->execute([$userId]);
+$user = $stmt->fetch();
+$isAdmin = $user && $user['is_admin'] == 1;
+
+// Allow delete if:
+// - User is the owner of the upload
+// - OR user is an admin
+if ($upload['user_id'] == $userId || $isAdmin) {
+    // Delete the file from the server
+    $filePath = 'uploads/' . $upload['filename'];
+    if (file_exists($filePath)) {
+        unlink($filePath);
+    }
+
+    // Delete from database
+    $stmt = $pdo->prepare("DELETE FROM uploads WHERE id = ?");
+    $stmt->execute([$uploadId]);
+}
+
+// Redirect back
+header('Location: dashboard.php');
 exit;
 ?>
