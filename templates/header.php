@@ -17,7 +17,8 @@
             </div>
             <div class="flex items-center space-x-4">
                 <a href="dashboard.php" class="text-gray-700 hover:text-gray-900">Upload</a>
-                <a href="feed.php" class="text-gray-700 hover:text-gray-900">Feed</a>
+                <a href="feed.php" class="text-gray-700 hover:text-gray-900">Projects</a>
+                <a href="about.php" class="text-gray-700 hover:text-gray-900">About</a>
 
                 <?php
                 if (isset($_SESSION['user_id'])) {
