@@ -42,7 +42,7 @@ $uploads = $stmt->fetchAll();
     <div class="min-h-screen bg-gradient-to-r from-blue-50 to-purple-100 p-6">
         <h1 class="text-4xl font-extrabold text-center mb-10 text-blue-800 drop-shadow">
         ✨ Explore My Projects ✨
-<       </h1>
+        </h1>
     <?php if ($uploads): ?>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             <?php foreach ($uploads as $upload): ?>
@@ -98,7 +98,14 @@ $uploads = $stmt->fetchAll();
                             Uploaded by <span class="font-semibold"><?php echo htmlspecialchars($upload['username']); ?></span><br>
                             <?php echo date('F j, Y', strtotime($upload['uploaded_at'])); ?>
                         </p>
-
+                        <?php
+                            $likeStmt = $pdo->prepare("SELECT COUNT(*) FROM likes WHERE upload_id = ?");
+                            $likeStmt->execute([$upload['id']]);
+                            $likeCount = $likeStmt->fetchColumn();
+                            if ($likeCount === false || $likeCount === null) {
+                                $likeCount = 0;
+                            }
+                        ?>
                         <!-- Likes -->
                         <div class="flex items-center space-x-2 mt-2">
                             <?php if (isset($_SESSION['user_id'])): ?>

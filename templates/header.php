@@ -15,7 +15,7 @@
         <div class="flex justify-between items-center h-16">
             <!-- Left: Logo -->
             <div class="flex items-center">
-                <a href="dashboard.php" class="text-2xl font-extrabold text-white drop-shadow">
+                <a href="feed.php" class="text-2xl font-extrabold text-white drop-shadow">
                     Henry's Portfolio
                 </a>
             </div>
