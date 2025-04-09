@@ -11,19 +11,29 @@ if (isset($_POST['upload']) && isset($_FILES['file'])) {
     $userId = $_SESSION['user_id'];
     $file = $_FILES['file'];
 
-    if ($file['error'] === 0) {
-        $filename = time() . '_' . basename($file['name']);
-        $destination = 'uploads/' . $filename;
+    // Validation
+    $allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+    $maxFileSize = 2 * 1024 * 1024; // 2MB
 
-        if (move_uploaded_file($file['tmp_name'], $destination)) {
-            $stmt = $pdo->prepare("INSERT INTO uploads (user_id, filename) VALUES (?, ?)");
-            $stmt->execute([$userId, $filename]);
-            $_SESSION['flash_upload'] = "File uploaded successfully!";
+    if ($file['error'] === 0) {
+        if (!in_array($file['type'], $allowedTypes)) {
+            $_SESSION['flash_upload'] = "Only PDF, JPG, and PNG files are allowed.";
+        } elseif ($file['size'] > $maxFileSize) {
+            $_SESSION['flash_upload'] = "File is too large. Maximum size is 2MB.";
         } else {
-            $_SESSION['flash_upload'] = "Error uploading file.";
+            $filename = time() . '_' . basename($file['name']);
+            $destination = 'uploads/' . $filename;
+
+            if (move_uploaded_file($file['tmp_name'], $destination)) {
+                $stmt = $pdo->prepare("INSERT INTO uploads (user_id, filename) VALUES (?, ?)");
+                $stmt->execute([$userId, $filename]);
+                $_SESSION['flash_upload'] = "File uploaded successfully!";
+            } else {
+                $_SESSION['flash_upload'] = "Error uploading file.";
+            }
         }
     } else {
-        $_SESSION['flash_upload'] = "File error.";
+        $_SESSION['flash_upload'] = "File upload error.";
     }
 }
 
