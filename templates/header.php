@@ -13,7 +13,7 @@
     <div class="max-w-7xl mx-auto px-4">
         <div class="flex justify-between items-center h-16">
             <div class="flex items-center">
-                <a href="dashboard.php" class="text-xl font-bold text-gray-800">Client Portal</a>
+                <a href="dashboard.php" class="text-xl font-bold text-gray-800">Henrys Portfolio</a>
             </div>
             <div class="flex items-center space-x-4">
                 <a href="dashboard.php" class="text-gray-700 hover:text-gray-900">Upload</a>
@@ -53,7 +53,7 @@
 
                 <!-- Notifications Bell + Dropdown -->
                 <div class="relative group">
-                    <button class="relative text-gray-700 hover:text-gray-900 focus:outline-none">
+                    <button class="relative text-gray-700 hover:text-gray-900 focus:outline-none mr-6">
                         🔔
                         <?php if ($notificationCount > 0): ?>
                             <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full px-1">
@@ -103,4 +103,40 @@
         </div>
     </div>
 </nav>
+
+<script>
+function fetchNotifications() {
+    fetch('fetch_notifications.php')
+        .then(response => response.json())
+        .then(data => {
+            // Update bell badge
+            const badge = document.querySelector('.notification-badge');
+            if (badge) badge.remove();
+
+            if (data.count > 0) {
+                const bell = document.querySelector('.group button');
+                const badgeHtml = '<span class="notification-badge absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full px-1">'
+                                  + data.count + '</span>';
+                bell.insertAdjacentHTML('beforeend', badgeHtml);
+            }
+
+            // Update dropdown list
+            const dropdown = document.querySelector('.group .p-4 ul');
+            if (dropdown) {
+                dropdown.innerHTML = '';
+                data.notifications.forEach(notification => {
+                    dropdown.innerHTML += `
+                        <li class="text-gray-600 text-sm ${notification.is_read == 0 ? 'font-bold' : ''}">
+                            ${notification.message}<br>
+                            <span class="text-gray-400 text-xs">${notification.created_at}</span>
+                        </li>
+                    `;
+                });
+            }
+        });
+}
+
+// Auto-refresh every 5 seconds
+setInterval(fetchNotifications, 5000);
+</script>
 
