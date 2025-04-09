@@ -70,11 +70,10 @@ if (!$currentUser || $currentUser['is_admin'] != 1) {
                 Upload
             </button>
         </form>
-
     </div>
 
-    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-6">
-        <h3 class="text-xl font-bold mb-4">Your Files</h3>
+    <div class="max-w-6xl mx-auto p-6">
+        <h2 class="text-3xl font-bold mb-8 text-center">Your Projects</h2>
 
         <?php
         $stmt = $pdo->prepare("SELECT * FROM uploads WHERE user_id = ?");
@@ -83,45 +82,59 @@ if (!$currentUser || $currentUser['is_admin'] != 1) {
         ?>
 
         <?php if ($uploads): ?>
-            <ul>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <?php foreach ($uploads as $upload): ?>
-                    <li class="mb-6">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <a class="text-blue-500 hover:text-blue-700" href="uploads/<?php echo htmlspecialchars($upload['filename']); ?>" target="_blank">
-                                    <?php echo htmlspecialchars($upload['filename']); ?>
-                                </a> 
-                                <span class="text-gray-400 text-sm">(Uploaded on <?php echo date('F j, Y', strtotime($upload['uploaded_at'])); ?>)</span>
+                    <div class="bg-white shadow-md rounded-lg overflow-hidden p-4 flex flex-col">
+                        <!-- Image -->
+                        <img src="uploads/<?php echo htmlspecialchars($upload['filename']); ?>" 
+                            alt="Project Image" 
+                            class="h-48 w-full object-cover mb-4 rounded">
 
-                                <?php
-                                $ext = strtolower(pathinfo($upload['filename'], PATHINFO_EXTENSION));
-                                if (in_array($ext, ['jpg', 'jpeg', 'png'])):
-                                ?>
-                                    <div class="mt-2">
-                                        <a href="uploads/<?php echo htmlspecialchars($upload['filename']); ?>" target="_blank">
-                                            <img src="uploads/<?php echo htmlspecialchars($upload['filename']); ?>" alt="Preview" class="h-24 rounded shadow">
-                                        </a>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <a href="edit_project.php?id=<?php echo $upload['id']; ?>" 
-                                class="bg-yellow-500 hover:bg-yellow-600 text-white text-xs font-bold py-1 px-2 rounded">
-                                    Edit
+                        <!-- Project Info -->
+                        <h3 class="text-lg font-bold text-gray-800 mb-2"><?php echo htmlspecialchars($upload['name']); ?></h3>
+
+                        <?php if (!empty($upload['comment'])): ?>
+                            <p class="text-gray-600 mb-4 text-sm"><?php echo htmlspecialchars($upload['comment']); ?></p>
+                        <?php endif; ?>
+
+                        <!-- Links -->
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <?php if (!empty($upload['link'])): ?>
+                                <a href="<?php echo htmlspecialchars($upload['link']); ?>" target="_blank"
+                                class="bg-blue-500 hover:bg-blue-700 text-white text-xs font-bold py-1 px-2 rounded">
+                                    View Project
                                 </a>
-                                <a href="delete.php?id=<?php echo $upload['id']; ?>" 
-                                class="bg-red-500 hover:bg-red-700 text-white text-xs font-bold py-1 px-2 rounded">
-                                    Delete
+                            <?php endif; ?>
+
+                            <?php if (!empty($upload['github_link'])): ?>
+                                <a href="<?php echo htmlspecialchars($upload['github_link']); ?>" target="_blank"
+                                class="inline-flex items-center justify-center bg-gray-800 hover:bg-gray-900 text-white p-2 rounded">
+                                    <!-- GitHub SVG Icon -->
+                                    <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 .5C5.6.5.5 5.6.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.5v-1.7c-3.2.7-3.9-1.5-3.9-1.5-.5-1.2-1.2-1.5-1.2-1.5-1-.7.1-.7.1-.7 1.1.1 1.7 1.2 1.7 1.2 1 .1 1.5 2.2 1.5 2.2.9 1.5 2.5 1 3.1.8.1-.7.4-1 .7-1.3-2.6-.3-5.3-1.3-5.3-6 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3 0 0 1-.3 3.3 1.2a11.5 11.5 0 016 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.5.2 2.7.1 3 .8.8 1.2 1.9 1.2 3.2 0 4.7-2.7 5.7-5.3 6 .4.3.7.9.7 1.7v2.5c0 .3.2.7.8.5A10.5 10.5 0 0023.5 12c0-6.4-5.1-11.5-11.5-11.5z"/>
+                                    </svg>
                                 </a>
-                            </div>
+                            <?php endif; ?>
                         </div>
-                    </li>
+
+                        <!-- Action Buttons -->
+                        <div class="flex justify-between mt-auto">
+                            <a href="edit_project.php?id=<?php echo $upload['id']; ?>"
+                            class="bg-yellow-500 hover:bg-yellow-600 text-white text-xs font-bold py-2 px-4 rounded">
+                                Edit
+                            </a>
+                            <a href="delete.php?id=<?php echo $upload['id']; ?>"
+                            onclick="return confirm('Are you sure you want to delete this project?');"
+                            class="bg-red-500 hover:bg-red-700 text-white text-xs font-bold py-2 px-4 rounded">
+                                Delete
+                            </a>
+                        </div>
+                    </div>
                 <?php endforeach; ?>
-            </ul>
+            </div>
         <?php else: ?>
-            <p class="text-gray-600">You haven't uploaded any files yet.</p>
+            <p class="text-center text-gray-600">You haven't uploaded any projects yet.</p>
         <?php endif; ?>
     </div>
-</div>
 
 <?php include 'templates/footer.php'; ?>
