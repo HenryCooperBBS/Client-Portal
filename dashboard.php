@@ -72,7 +72,9 @@ $user = $stmt->fetch();
                             if (in_array($ext, ['jpg', 'jpeg', 'png'])):
                             ?>
                                 <div class="mt-2">
-                                    <img src="uploads/<?php echo htmlspecialchars($upload['filename']); ?>" alt="Preview" class="h-24 rounded shadow">
+                                    <a href="uploads/<?php echo htmlspecialchars($upload['filename']); ?>" target="_blank">
+                                        <img src="uploads/<?php echo htmlspecialchars($upload['filename']); ?>" alt="Preview" class="h-24 rounded shadow">
+                                    </a>
                                 </div>
                             <?php endif; ?>
                         </div>
